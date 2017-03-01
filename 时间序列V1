@@ -2,8 +2,6 @@
 test.dss_user_pay,
 test.dss_shop_info,
 test.dss_user_view
-
-
 hive -e"
 SET mapred.job.queue.name=root.chuzucheshiyebu-chuzuchebi.chuzucheshiyebu-taxi-dia;
 select substr(time_stamp,1,10),
