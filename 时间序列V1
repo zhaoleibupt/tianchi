@@ -1,3 +1,20 @@
+###hive
+test.dss_user_pay,
+test.dss_shop_info,
+test.dss_user_view
+
+
+hive -e"
+SET mapred.job.queue.name=root.chuzucheshiyebu-chuzuchebi.chuzucheshiyebu-taxi-dia;
+select substr(time_stamp,1,10),
+       shop_id,
+       count(*)
+from test.dss_user_pay
+group by substr(time_stamp,1,10),
+       shop_id">a.csv
+
+
+###model
 library(TTR)
 library(forecast)
 library(car)
