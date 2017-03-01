@@ -16,29 +16,38 @@ group by substr(time_stamp,1,10),
 library(TTR)
 library(forecast)
 library(car)
+library(readr)
 library(readxl)
 library(plyr)
-setwd('E:/')
-order <- read_excel('a.xlsx')
-order1 <- order[as.Date(order$`_c0`) >= as.Date('2016-10-01'), ]
+#setwd('E:/')
+#order <- read_excel('a.xlsx')
+order <- read.csv('C:/Users/zhaolei/Desktop/a.csv',sep='\t',stringsAsFactors = F)
+order$X_c0<-as.Date(order$X_c0)
+order1 <- order[as.Date(order$X_c0) >= as.Date('2016-10-01'), ]
 
-a<-rep(unique(order1$X_c0),each=2000)
+
+a<-rep(unique(order1$X_c0),2000)
 b<-rep(1:2000,each=31)
-all<-data.frame(a,b)
+all<-data.frame(a,b,c=0)
+names(all)<-c('X_c0','shop_id','c')
+order2<-merge(order1,all,all=T)
+order2[is.na(order2$X_c2),]$X_c2<-1.1
+
+
 
 fun<-function(x){
-    ulweekseries <- ts(x$`_c2`, start = c(1), frequency = 7)
-    ulweek.forecast <- rep(0, dim(x)[1])
-    N_back <- 14
-    for (i in 1:(dim(x)[1] - N_back)){
-      ul.ts <- ts(ulweekseries[i:(i + N_back - 1)], frequency = 7)
-      ul.forecast <- ets(log(ul.ts),model='AAA')
-      ul.forecast2 <- forecast(ul.forecast, 1)
-      ulweek.forecast[i + N_back] <- exp(ul.forecast2$mean[1])
-    }
-    vect <- ulweek.forecast[(length(ulweek.forecast)-7):length(ulweek.forecast)]
-    return(as.numeric(vect))
+  ulweekseries <- ts(x$X_c2, start = c(1), frequency = 7)
+  ulweek.forecast <- rep(0, dim(x)[1])
+  N_back <- 14
+  for (i in 1:(dim(x)[1] - N_back)){
+    ul.ts <- ts(ulweekseries[i:(i + N_back - 1)], frequency = 7)
+    ul.forecast <- ets(log(ul.ts),model='AAA')
+    ul.forecast2 <- forecast(ul.forecast, 1)
+    ulweek.forecast[i + N_back] <- exp(ul.forecast2$mean[1])
+  }
+  vect <- ulweek.forecast[(length(ulweek.forecast)-7):length(ulweek.forecast)]
+  return(as.numeric(vect))
 }
 
-result <- dlply(order1,.variables = "shop_id",.fun=fun)
+result <- dlply(order2,.variables = "shop_id",.fun=fun)
 
