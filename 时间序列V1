@@ -22,6 +22,10 @@ setwd('E:/')
 order <- read_excel('a.xlsx')
 order1 <- order[as.Date(order$`_c0`) >= as.Date('2016-10-01'), ]
 
+a<-rep(unique(order1$X_c0),each=2000)
+b<-rep(1:2000,each=31)
+all<-data.frame(a,b)
+
 fun<-function(x){
     ulweekseries <- ts(x$`_c2`, start = c(1), frequency = 7)
     ulweek.forecast <- rep(0, dim(x)[1])
